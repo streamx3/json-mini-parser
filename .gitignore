@@ -15,6 +15,7 @@
 # Precompiled Headers
 *.gch
 *.pch
+*_pch.h.cpp
 
 # Libraries
 *.lib
@@ -41,6 +42,7 @@
 *.su
 *.idb
 *.pdb
+*.debug
 
 # Kernel Module Compile Results
 *.mod*
@@ -51,5 +53,71 @@ Module.symvers
 Mkfile.old
 dkms.conf
 
-# debug information files
+# Debug information files
 *.dwo
+
+# Build directories
+/build*/
+.moc/
+.obj/
+.pch/
+.rcc/
+.uic/
+
+# Qt / Qt Creator generated files
+*.moc
+*.qm
+*.prl
+*.res
+*.rc
+*_resource.rc
+moc_*.cpp
+ui_*.h
+qrc_*.cpp
+/.qmake.cache
+/.qmake.stash
+**/.qmlls.ini
+*.pro.user*
+*.qbs.user*
+CMakeLists.txt.user*
+/.qtcreator/
+
+# Visual Studio generated files
+*.ib_pdb_index
+*.sln
+*.suo
+*.vcproj
+*vcproj.*.*.user
+*.ncb
+*.sdf
+*.opensdf
+*.vcxproj
+*vcxproj.*
+
+# MinGW generated files
+*.Debug
+*.Release
+
+# Editor temporary files
+*~
+*.autosave
+*.orig
+*.rej
+*.flc
+.*.swp
+.#*
+*.*#
+
+# OS / filesystem
+.DS_Store
+.directory
+Thumbs.db
+tags
+core
+!core/
+
+# Makefile
+Makefile*
+
+# Python byte code
+*.pyc
