@@ -316,6 +316,30 @@ int8_t get_string_by_path(jdata_t *data, const char *path, char *output, size_t 
     return 0;
 }
 
+int8_t get_int_by_path(jdata_t *data, const char *path, int32_t *output)
+{
+    if (!data || !data->buf || !output) return -1;
+
+    const char *end = data->buf + data->used_sz;
+    const char *val = navigate(data->buf, data->used_sz, path);
+    if (!val || val >= end) return -1;
+    if (*val != '-' && (*val < '0' || *val > '9')) return -1;
+
+    /* Reject float literals: scan past digits and check for '.' or exponent */
+    const char *scan = (*val == '-') ? val + 1 : val;
+    while (scan < end && *scan >= '0' && *scan <= '9') scan++;
+    if (scan < end && (*scan == '.' || *scan == 'e' || *scan == 'E')) return -1;
+
+    int32_t result = 0;
+    int     sign   = 1;
+    if (*val == '-') { sign = -1; val++; }
+    while (val < end && *val >= '0' && *val <= '9')
+        result = result * 10 + (*val++ - '0');
+
+    *output = (int32_t)sign * result;
+    return 0;
+}
+
 int8_t get_float_by_path(jdata_t *data, const char *path, float *output)
 {
     if (!data || !data->buf || !output) return -1;

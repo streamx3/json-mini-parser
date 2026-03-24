@@ -27,7 +27,9 @@ set(ALL_TESTS
     r1_cfg_thresh_type    r1_cfg_thresh0_type   r1_cfg_thresh1_type   r1_cfg_thresh2_type
     r1_nodes_type         r1_nodes0_type
     r1_nodes0_uid_type    r1_nodes0_label_type  r1_nodes0_online_type
-    # raw1 — values
+    # raw1 — int values
+    r1_id_int_val         r1_cfg_interval_int_val  r1_nodes0_uid_int_val
+    # raw1 — float/mixed values
     r1_id_val             r1_name_val           r1_active_val         r1_rating_val
     r1_tags0_val          r1_tags1_val          r1_tags2_val
     r1_cfg_interval_val   r1_cfg_debug_val
@@ -44,7 +46,9 @@ set(ALL_TESTS
     r2_cfg_thresh_type    r2_cfg_thresh0_type   r2_cfg_thresh1_type   r2_cfg_thresh2_type
     r2_nodes_type         r2_nodes0_type
     r2_nodes0_uid_type    r2_nodes0_label_type  r2_nodes0_online_type
-    # raw2 — values
+    # raw2 — int values
+    r2_id_int_val         r2_cfg_interval_int_val  r2_cfg_thresh1_int_val  r2_nodes0_uid_int_val
+    # raw2 — float/mixed values
     r2_id_val             r2_name_val           r2_active_val         r2_rating_val
     r2_tags0_val          r2_tags1_val          r2_tags2_val
     r2_cfg_interval_val   r2_cfg_debug_val
@@ -52,6 +56,7 @@ set(ALL_TESTS
     r2_nodes0_uid_val     r2_nodes0_label_val   r2_nodes0_online_val
 
     # edge cases
+    int_rejects_float
     missing_path          missing_nested        missing_oob
     invalid_json          invalid_unterminated
     str_truncation        null_data

@@ -76,7 +76,23 @@ JSON_TYPE_T get_type_by_path(jdata_t *data, const char *path);
 int8_t get_string_by_path(jdata_t *data, const char *path, char *output, size_t n);
 
 /**
+ * @brief Get an integer value at a given path
+ *
+ * Accepts JSON_TYPE_INT values only (no decimal point / exponent).
+ * Returns -1 if the value is a floating-point literal.
+ *
+ * @param[in]  data    Pointer to the jdata_t structure
+ * @param[in]  path    Path string
+ * @param[out] output  Where to store the result
+ * @return 0 on success, -1 on error
+ */
+int8_t get_int_by_path(jdata_t *data, const char *path, int32_t *output);
+
+/**
  * @brief Get a float value at a given path
+ *
+ * Accepts both JSON_TYPE_FLOAT and JSON_TYPE_INT values — an integer
+ * literal such as 42 is returned as 42.0f without error.
  *
  * @param[in]  data    Pointer to the jdata_t structure
  * @param[in]  path    Path string

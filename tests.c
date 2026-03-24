@@ -95,6 +95,14 @@ static int t_##name(void) { \
     return feq(v, (expected)) ? PASS : FAIL; \
 }
 
+#define DEF_INT(name, raw, path, expected) \
+static int t_##name(void) { \
+    jdata_t d = jd(raw); \
+    int32_t v; \
+    if (get_int_by_path(&d, path, &v) != 0) return FAIL; \
+    return v == (int32_t)(expected) ? PASS : FAIL; \
+}
+
 #define DEF_BOOL(name, raw, path, expected) \
 static int t_##name(void) { \
     jdata_t d = jd(raw); \
@@ -130,7 +138,12 @@ DEF_TYPE(r1_nodes0_uid_type,    raw1, "/nodes[0]/uid",        JSON_TYPE_INT)
 DEF_TYPE(r1_nodes0_label_type,  raw1, "/nodes[0]/label",      JSON_TYPE_STRING)
 DEF_TYPE(r1_nodes0_online_type, raw1, "/nodes[0]/online",     JSON_TYPE_BOOL)
 
-/* values */
+/* int values */
+DEF_INT  (r1_id_int_val,           raw1, "/id",               42)
+DEF_INT  (r1_cfg_interval_int_val, raw1, "/config/interval_ms",500)
+DEF_INT  (r1_nodes0_uid_int_val,   raw1, "/nodes[0]/uid",     1)
+
+/* float / mixed values */
 DEF_FLOAT(r1_id_val,            raw1, "/id",                   42.0f)
 DEF_STR  (r1_name_val,          raw1, "/name",                 "Acme Corp")
 DEF_BOOL (r1_active_val,        raw1, "/active",               true)
@@ -175,7 +188,13 @@ DEF_TYPE(r2_nodes0_uid_type,    raw2, "/nodes[0]/uid",        JSON_TYPE_INT)
 DEF_TYPE(r2_nodes0_label_type,  raw2, "/nodes[0]/label",      JSON_TYPE_STRING)
 DEF_TYPE(r2_nodes0_online_type, raw2, "/nodes[0]/online",     JSON_TYPE_BOOL)
 
-/* values */
+/* int values */
+DEF_INT  (r2_id_int_val,           raw2, "/id",               42)
+DEF_INT  (r2_cfg_interval_int_val, raw2, "/config/interval_ms",500)
+DEF_INT  (r2_cfg_thresh1_int_val,  raw2, "/config/thresholds[1]",3)  /* bare 3, not 3.0 */
+DEF_INT  (r2_nodes0_uid_int_val,   raw2, "/nodes[0]/uid",     1)
+
+/* float / mixed values */
 DEF_FLOAT(r2_id_val,            raw2, "/id",                   42.0f)
 DEF_STR  (r2_name_val,          raw2, "/name",                 "Acme Corp")
 DEF_BOOL (r2_active_val,        raw2, "/active",               true)
@@ -231,6 +250,14 @@ static int t_invalid_unterminated(void)
     return json_valid(&d) != 0 ? PASS : FAIL;
 }
 
+/* get_int_by_path on a float literal must fail */
+static int t_int_rejects_float(void)
+{
+    jdata_t d = jd(raw1);
+    int32_t v;
+    return get_int_by_path(&d, "/rating", &v) != 0 ? PASS : FAIL;
+}
+
 /* Output buffer too small for the string value → must return error */
 static int t_str_truncation(void)
 {
@@ -275,7 +302,11 @@ static const test_entry_t tests[] = {
     { "r1_nodes0_uid_type",    t_r1_nodes0_uid_type    },
     { "r1_nodes0_label_type",  t_r1_nodes0_label_type  },
     { "r1_nodes0_online_type", t_r1_nodes0_online_type },
-    /* --- raw1 values --- */
+    /* --- raw1 int values --- */
+    { "r1_id_int_val",            t_r1_id_int_val            },
+    { "r1_cfg_interval_int_val",  t_r1_cfg_interval_int_val  },
+    { "r1_nodes0_uid_int_val",    t_r1_nodes0_uid_int_val    },
+    /* --- raw1 float/mixed values --- */
     { "r1_id_val",             t_r1_id_val             },
     { "r1_name_val",           t_r1_name_val           },
     { "r1_active_val",         t_r1_active_val         },
@@ -313,7 +344,12 @@ static const test_entry_t tests[] = {
     { "r2_nodes0_uid_type",    t_r2_nodes0_uid_type    },
     { "r2_nodes0_label_type",  t_r2_nodes0_label_type  },
     { "r2_nodes0_online_type", t_r2_nodes0_online_type },
-    /* --- raw2 values --- */
+    /* --- raw2 int values --- */
+    { "r2_id_int_val",            t_r2_id_int_val            },
+    { "r2_cfg_interval_int_val",  t_r2_cfg_interval_int_val  },
+    { "r2_cfg_thresh1_int_val",   t_r2_cfg_thresh1_int_val   },
+    { "r2_nodes0_uid_int_val",    t_r2_nodes0_uid_int_val    },
+    /* --- raw2 float/mixed values --- */
     { "r2_id_val",             t_r2_id_val             },
     { "r2_name_val",           t_r2_name_val           },
     { "r2_active_val",         t_r2_active_val         },
@@ -330,6 +366,7 @@ static const test_entry_t tests[] = {
     { "r2_nodes0_label_val",   t_r2_nodes0_label_val   },
     { "r2_nodes0_online_val",  t_r2_nodes0_online_val  },
     /* --- edge cases --- */
+    { "int_rejects_float",     t_int_rejects_float     },
     { "missing_path",          t_missing_path          },
     { "missing_nested",        t_missing_nested        },
     { "missing_oob",           t_missing_oob           },
