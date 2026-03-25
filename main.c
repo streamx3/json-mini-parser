@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <stdint.h>
 
 #include "json-mini-parser.h"
 
@@ -57,7 +58,7 @@ int main()
     printf("failed to fetch string\n");
     return -1;
   } else {
-    printf("string fetch is ok\n");
+    printf("string fetch is ok: '%s'\n", tmp);
   }
 
   if (strcmp(tmp, "Acme Corp") != 0) {
@@ -67,6 +68,15 @@ int main()
     printf("copied string is ok: '%s'\n", tmp);
   }
 
+  int32_t uid2;
+
+  ret = get_int_by_path(&js, "/nodes[1]/uid", &uid2);
+  if (ret != 0) {
+    printf("failed to fetch int\n");
+    return -1;
+  } else {
+    printf("int fetch is ok: %d\n", uid2);
+  }
 
   return 0;
 }

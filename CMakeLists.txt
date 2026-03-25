@@ -16,53 +16,38 @@ target_link_libraries(json-tests PRIVATE m)
 # ---- CTest ----
 enable_testing()
 
-set(ALL_TESTS
-    # raw1 — validity
-    r1_valid
-    # raw1 — types
-    r1_id_type            r1_name_type          r1_active_type
-    r1_rating_type        r1_address_type
-    r1_tags_type          r1_tags0_type
-    r1_config_type        r1_cfg_interval_type  r1_cfg_debug_type
-    r1_cfg_thresh_type    r1_cfg_thresh0_type   r1_cfg_thresh1_type   r1_cfg_thresh2_type
-    r1_nodes_type         r1_nodes0_type
-    r1_nodes0_uid_type    r1_nodes0_label_type  r1_nodes0_online_type
-    # raw1 — int values
-    r1_id_int_val         r1_cfg_interval_int_val  r1_nodes0_uid_int_val
-    # raw1 — float/mixed values
-    r1_id_val             r1_name_val           r1_active_val         r1_rating_val
-    r1_tags0_val          r1_tags1_val          r1_tags2_val
-    r1_cfg_interval_val   r1_cfg_debug_val
-    r1_cfg_thresh0_val    r1_cfg_thresh1_val    r1_cfg_thresh2_val
-    r1_nodes0_uid_val     r1_nodes0_label_val   r1_nodes0_online_val
-
-    # raw2 — validity
-    r2_valid
-    # raw2 — types
-    r2_id_type            r2_name_type          r2_active_type
-    r2_rating_type        r2_address_type
-    r2_tags_type          r2_tags0_type
-    r2_config_type        r2_cfg_interval_type  r2_cfg_debug_type
-    r2_cfg_thresh_type    r2_cfg_thresh0_type   r2_cfg_thresh1_type   r2_cfg_thresh2_type
-    r2_nodes_type         r2_nodes0_type
-    r2_nodes0_uid_type    r2_nodes0_label_type  r2_nodes0_online_type
-    # raw2 — int values
-    r2_id_int_val         r2_cfg_interval_int_val  r2_cfg_thresh1_int_val  r2_nodes0_uid_int_val
-    # raw2 — float/mixed values
-    r2_id_val             r2_name_val           r2_active_val         r2_rating_val
-    r2_tags0_val          r2_tags1_val          r2_tags2_val
-    r2_cfg_interval_val   r2_cfg_debug_val
-    r2_cfg_thresh0_val    r2_cfg_thresh1_val    r2_cfg_thresh2_val
-    r2_nodes0_uid_val     r2_nodes0_label_val   r2_nodes0_online_val
-
-    # edge cases
-    int_rejects_float
-    missing_path          missing_nested        missing_oob
-    invalid_json          invalid_unterminated
-    str_truncation        null_data
+# Tests that run identically against both fixtures.
+# cfg_thresh1_type accepts INT or FLOAT internally, so it belongs here too.
+set(SHARED_TESTS
+    valid
+    id_type             name_type           active_type
+    rating_type         address_type
+    tags_type           tags0_type
+    config_type         cfg_interval_type   cfg_debug_type
+    cfg_thresh_type     cfg_thresh0_type    cfg_thresh1_type    cfg_thresh2_type
+    nodes_type          nodes0_type
+    nodes0_uid_type     nodes0_label_type   nodes0_online_type
+    id_int_val          cfg_interval_int_val    nodes0_uid_int_val
+    id_val              name_val            active_val          rating_val
+    tags0_val           tags1_val           tags2_val
+    cfg_interval_val    cfg_debug_val
+    cfg_thresh0_val     cfg_thresh1_val     cfg_thresh2_val
+    nodes0_uid_val      nodes0_label_val    nodes0_online_val
 )
 
-foreach(T ${ALL_TESTS})
+foreach(F raw1 raw2)
+    foreach(T ${SHARED_TESTS})
+        add_test(NAME ${F}.${T} COMMAND json-tests ${F} ${T})
+    endforeach()
+endforeach()
+
+# raw2 only: bare 3 is INT, so get_int succeeds; raw1 has 3.0 which get_int rejects
+add_test(NAME raw2.cfg_thresh1_int_val COMMAND json-tests raw2 cfg_thresh1_int_val)
+
+# Edge-case tests need no fixture
+foreach(T missing_path missing_nested missing_oob
+          invalid_json invalid_unterminated
+          int_rejects_float str_truncation null_data)
     add_test(NAME ${T} COMMAND json-tests ${T})
 endforeach()
 
